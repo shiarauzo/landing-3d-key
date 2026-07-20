@@ -9,7 +9,6 @@ import { Clients } from "./honey/components/sections/Clients";
 import { Faq } from "./honey/components/sections/Faq";
 import { Hero } from "./honey/components/sections/Hero";
 import { HowWeSprint } from "./honey/components/sections/HowWeSprint";
-import { HowWeWork } from "./honey/components/sections/HowWeWork";
 import { KillThemWithSweetness } from "./honey/components/sections/KillThemWithSweetness";
 import { PoolRules } from "./honey/components/sections/PoolRules";
 import { Services } from "./honey/components/sections/Services";
@@ -31,7 +30,6 @@ export default function Home() {
           <About />
           <Services />
           <PoolRules />
-          <HowWeWork />
           <BeforeAfter />
           <HowWeSprint />
           <Clients />

@@ -68,7 +68,7 @@ function Starfield() {
 export function BeforeAfter() {
   return (
     <section className="relative bg-black px-6 pt-6 sm:px-8">
-      <SectionHeader index="05" name="Antes / Después" />
+      <SectionHeader index="04" name="Antes / Después" />
 
       {/* Starfield transition band */}
       <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden">

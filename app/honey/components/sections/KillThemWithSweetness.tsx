@@ -14,7 +14,7 @@ const STORY = [
 export function KillThemWithSweetness() {
   return (
     <section className="relative bg-black px-6 pt-6 sm:px-8">
-      <SectionHeader index="08" name="Origen" />
+      <SectionHeader index="07" name="Origen" />
 
       <div className="mx-auto max-w-4xl py-28 sm:py-40">
         <h2 className="text-4xl font-medium leading-[1.02] tracking-tight text-white sm:text-6xl">
