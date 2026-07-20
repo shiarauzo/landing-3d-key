@@ -18,10 +18,8 @@ export function Header() {
           >
             <span className="text-white/60">1</span> hola@unit.co
           </a>
-          <a href="#reserva" className={`leading-tight ${linkFocus}`}>
-            Lista de
-            <br />
-            espera
+          <a href="#reserva" className={`whitespace-nowrap ${linkFocus}`}>
+            Lista de espera
           </a>
           <a
             href="https://instagram.com/unit"
