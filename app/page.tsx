@@ -4,7 +4,6 @@ import { Cursor } from "./honey/components/Cursor";
 import { Header } from "./honey/components/Header";
 import { SmoothScroll } from "./honey/components/SmoothScroll";
 import { About } from "./honey/components/sections/About";
-import { Clients } from "./honey/components/sections/Clients";
 import { Faq } from "./honey/components/sections/Faq";
 import { Hero } from "./honey/components/sections/Hero";
 import { HowWeSprint } from "./honey/components/sections/HowWeSprint";
@@ -29,7 +28,6 @@ export default function Home() {
           <Services />
           <PoolRules />
           <HowWeSprint />
-          <Clients />
           <Faq />
         </main>
       </SmoothScroll>

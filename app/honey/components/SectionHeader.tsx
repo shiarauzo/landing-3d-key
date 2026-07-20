@@ -10,7 +10,7 @@ export function SectionHeader({
   return (
     <div className="border-t border-white/15 pt-4">
       <div className="flex items-start gap-16 font-mono text-[11px] uppercase tracking-[0.2em] text-white/45 sm:gap-24">
-        <span>[ {index} / 06 ]</span>
+        <span>[ {index} / 05 ]</span>
         <span>{name}</span>
       </div>
     </div>
