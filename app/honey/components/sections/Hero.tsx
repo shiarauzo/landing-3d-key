@@ -41,7 +41,7 @@ export function Hero() {
       />
 
       {/* Content */}
-      <div className="pointer-events-none relative z-10 flex flex-1 flex-col items-center justify-end px-6 pb-[13vh] text-center">
+      <div className="pointer-events-none relative z-10 flex flex-1 flex-col items-center justify-end px-6 pb-[5vh] text-center">
         <span className="block overflow-hidden">
           <motion.h1
             className="text-6xl font-medium tracking-tight text-[#f2f2f0] sm:text-8xl"

@@ -1,11 +1,11 @@
 "use client";
 
 import { useGLTF } from "@react-three/drei";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const MODEL = "/models/hand-google.glb";
+const MODEL = "/models/hand.glb";
 
 // Frame-rate-independent damping factor.
 function damp(current: number, target: number, lambda: number, dt: number) {
@@ -15,7 +15,6 @@ function damp(current: number, target: number, lambda: number, dt: number) {
 function Hand() {
   const { scene } = useGLTF(MODEL);
   const follow = useRef<THREE.Group>(null);
-  const { pointer } = useThree();
 
   // Clone, apply a white wireframe material, center + normalize scale.
   const model = useMemo(() => {
@@ -36,26 +35,33 @@ function Hand() {
     box.getSize(size);
     box.getCenter(center);
     root.position.sub(center);
-    root.scale.setScalar(4.0 / Math.max(size.x, size.y, size.z));
+    root.scale.setScalar(4.4 / Math.max(size.x, size.y, size.z));
     const wrap = new THREE.Group();
     wrap.add(root);
-    // Reaching pose: a diagonal reach, fingers tipped toward the viewer.
-    wrap.rotation.set(0.35, 0.6, -0.5);
+    // Reaching pose for the full hand + forearm.
+    wrap.rotation.set(0.2, 0.5, -0.45);
     return wrap;
   }, [scene]);
 
   useFrame((state, dt) => {
     if (!follow.current) return;
     const t = state.clock.elapsedTime;
-    follow.current.rotation.y = damp(follow.current.rotation.y, pointer.x * 0.35, 4, dt);
-    follow.current.rotation.x = damp(follow.current.rotation.x, -pointer.y * 0.28, 4, dt);
-    // Idle breath so the hand is never fully static.
-    follow.current.position.y = 0.5 + Math.sin(t * 0.6) * 0.04;
-    follow.current.rotation.z = Math.sin(t * 0.4) * 0.015;
+    const { x, y } = state.pointer;
+    // Always follow the cursor — rotate strongly toward it, drift gently.
+    follow.current.rotation.y = damp(follow.current.rotation.y, x * 0.7, 3.5, dt);
+    follow.current.rotation.x = damp(follow.current.rotation.x, -y * 0.5, 3.5, dt);
+    follow.current.rotation.z = Math.sin(t * 0.4) * 0.02;
+    follow.current.position.x = damp(follow.current.position.x, x * 0.5, 3.5, dt);
+    follow.current.position.y = damp(
+      follow.current.position.y,
+      1.75 + y * 0.3 + Math.sin(t * 0.6) * 0.05,
+      3.5,
+      dt,
+    );
   });
 
   return (
-    <group ref={follow} position={[0, 0.5, 0]}>
+    <group ref={follow} position={[0, 1.75, 0]}>
       <primitive object={model} />
     </group>
   );
