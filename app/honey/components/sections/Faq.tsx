@@ -34,7 +34,7 @@ export function Faq() {
 
   return (
     <section id="reserva" className="relative bg-[#0c0c0c] px-6 pt-6 sm:px-8">
-      <SectionHeader index="08" name="Reserva" />
+      <SectionHeader index="05" name="Reserva" />
 
       {/* Waitlist */}
       <div className="grid gap-12 py-24 md:grid-cols-2">
@@ -105,7 +105,7 @@ export function Faq() {
         <a
           href="#reserva"
           data-cursor="reservar"
-          className="group text-[16vw] font-black leading-none tracking-tighter text-white transition-colors hover:text-[#4d7cff] sm:text-[12vw]"
+          className="group text-[16vw] font-black leading-none tracking-tighter text-white transition-colors hover:text-white/50 sm:text-[12vw]"
         >
           ¿Reservas la 001?
         </a>

@@ -5,8 +5,8 @@
   --foreground: #f4f4f5;
   --muted: #7c7c85;
   --line: #1c1c22;
-  --accent: #4d7cff;
-  --accent-soft: rgba(77, 124, 255, 0.16);
+  --accent: #ffffff;
+  --accent-soft: rgba(255, 255, 255, 0.12);
 }
 
 @theme inline {

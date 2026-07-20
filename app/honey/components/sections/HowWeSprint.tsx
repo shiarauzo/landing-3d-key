@@ -1,4 +1,3 @@
-import { Marquee } from "../Marquee";
 import { SectionHeader } from "../SectionHeader";
 
 const PHASES = [
@@ -28,7 +27,7 @@ const PHASES = [
 export function HowWeSprint() {
   return (
     <section className="relative bg-[#0c0c0c] px-6 pt-6 sm:px-8">
-      <SectionHeader index="05" name="El drop" />
+      <SectionHeader index="04" name="El drop" />
 
       <div className="py-20">
         <h2 className="max-w-2xl text-4xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl">
@@ -45,7 +44,7 @@ export function HowWeSprint() {
               key={p.n}
               className="group bg-[#0c0c0c] p-7 transition-colors hover:bg-[#151515]"
             >
-              <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#4d7cff]">
+              <div className="font-mono text-xs uppercase tracking-[0.2em] text-[#ffffff]">
                 Fase {p.n}
               </div>
               <h3 className="mt-6 text-xl font-medium text-white">{p.title}</h3>
@@ -55,15 +54,6 @@ export function HowWeSprint() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Giant marquee transition */}
-      <div className="-mx-6 border-y border-white/15 py-6 sm:-mx-8">
-        <Marquee
-          text="UNIT 001  ✦  "
-          duration={24}
-          className="text-[9vw] font-black uppercase leading-none tracking-tight text-white"
-        />
       </div>
     </section>
   );
