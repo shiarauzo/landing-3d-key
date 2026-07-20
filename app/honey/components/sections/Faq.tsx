@@ -24,7 +24,7 @@ const FAQS = [
   {
     n: "004",
     q: "¿Cuándo lanzan?",
-    a: "Estamos en pre-lanzamiento. La lista de espera se entera de la fecha antes que nadie, y entra primero cuando abrimos.",
+    a: "Estamos en prelanzamiento. La lista de espera se entera de la fecha antes que nadie, y entra primero cuando abrimos.",
   },
 ];
 

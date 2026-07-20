@@ -11,7 +11,7 @@ export function Hero() {
       {/* Center statement */}
       <div className="flex flex-col items-start">
         <p className="tnum mb-6 text-xs uppercase tracking-[0.3em] text-[color:var(--accent)]">
-          — Pre-lanzamiento
+          — Prelanzamiento
         </p>
         <h1 className="max-w-3xl text-4xl font-medium leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
           Electrónica que llega
