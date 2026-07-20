@@ -15,10 +15,10 @@ export function Services() {
             Cuatro unidades. Cada una, una serie.
           </h2>
           <p className="mt-8 max-w-md text-sm leading-relaxed text-white/55">
-            Audio que desaparece en tus oídos. Sonido tallado en aluminio. Luz
-            que obedece. Energía del tamaño de una baraja. Cada objeto se piensa
-            entero, se produce en serie corta y lleva su número. Sin restock, sin
-            versiones infinitas. La unidad que compras es la unidad que existe.
+            Un teclado que piensa contigo. Un sable de luz que zumba de verdad.
+            Un auto eléctrico que cabe en tu mano. Un robot que te hace compañía.
+            Objetos raros, bien hechos, en series cortas y numeradas. Sin restock,
+            sin versiones infinitas. La unidad que compras es la unidad que existe.
           </p>
           <a
             href="#reserva"

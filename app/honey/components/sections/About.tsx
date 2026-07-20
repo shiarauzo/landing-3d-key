@@ -11,7 +11,7 @@ import {
 import { useRef } from "react";
 
 const TEXT =
-  "UNIT es una startup de electrónica. Diseñamos objetos en series cortas y numeradas —audio, sonido, luz, energía— pensados para durar. Cada unidad se produce una vez, lleva su número y no se repite.";
+  "UNIT es una startup de electrónica. Diseñamos objetos en series cortas y numeradas —un teclado con IA, un sable de luz, un auto, un robot— pensados para durar. Cada unidad se produce una vez, lleva su número y no se repite.";
 
 // About — a scroll-driven manifesto. The section is tall; its text is pinned
 // in the center while scroll progress lights the words from grey to white.
@@ -28,7 +28,7 @@ export function About() {
     <section ref={ref} className="relative h-[260vh] bg-[#0c0c0c]">
       <div className="sticky top-0 flex h-screen items-center px-6 sm:px-8">
         <div className="mx-auto w-full max-w-5xl">
-          <span className="mb-10 inline-block rounded-md bg-[#4d7cff] px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-white">
+          <span className="mb-10 inline-block rounded-md bg-white px-3 py-1 font-mono text-[11px] uppercase tracking-widest text-black">
             Manifiesto
           </span>
           <p className="flex flex-wrap text-[6.5vw] font-medium leading-[1.12] tracking-tight text-white sm:text-[3.2vw]">

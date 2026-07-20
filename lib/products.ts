@@ -3,43 +3,43 @@ export type Product = {
   name: string;
   category: string;
   blurb: string;
-  status: "próximamente" | "en desarrollo" | "lista de espera";
+  status: "disponible" | "próximamente";
   // Gradient used for the floating hover preview (swap for real photos later).
   tint: [string, string];
 };
 
-// Placeholder catalog — rename freely, the layout adapts to any count.
+// The UNIT lineup — only the AI Keyboard ships now, the rest are coming soon.
 export const products: Product[] = [
   {
     n: "001",
-    name: "Pulse",
-    category: "Audio",
-    blurb: "Audífonos in-ear con cancelación adaptativa y latencia mínima.",
-    status: "lista de espera",
-    tint: ["#4d7cff", "#0b1638"],
+    name: "AI Keyboard",
+    category: "Teclado",
+    blurb: "Teclado mecánico con asistente de IA integrado. Aluminio, switches lineales, atajos que aprenden de ti.",
+    status: "disponible",
+    tint: ["#4a4a50", "#0e0e11"],
   },
   {
     n: "002",
-    name: "Field",
-    category: "Sonido",
-    blurb: "Altavoz portátil de rango completo. Aluminio mecanizado.",
-    status: "en desarrollo",
-    tint: ["#ff5d5d", "#2a0b0b"],
+    name: "Lightsaber",
+    category: "Sable",
+    blurb: "Réplica de sable de luz con hoja LED, sonido reactivo y empuñadura mecanizada.",
+    status: "próximamente",
+    tint: ["#3c3c42", "#0d0d10"],
   },
   {
     n: "003",
-    name: "Arc",
-    category: "Luz",
-    blurb: "Lámpara de escritorio con temperatura variable y brazo magnético.",
-    status: "en desarrollo",
-    tint: ["#ffb347", "#2a1a05"],
+    name: "Mini EV",
+    category: "Auto",
+    blurb: "Auto eléctrico a escala, controlable, con chasis de metal y suspensión real.",
+    status: "próximamente",
+    tint: ["#55555c", "#101013"],
   },
   {
     n: "004",
-    name: "Node",
-    category: "Energía",
-    blurb: "Hub de carga GaN. Cuatro puertos, 140W, del tamaño de una baraja.",
+    name: "Pocket Bot",
+    category: "Robot",
+    blurb: "Compañero robótico de bolsillo. Expresivo y táctil — una mascota digital que vive contigo.",
     status: "próximamente",
-    tint: ["#5de0a0", "#062017"],
+    tint: ["#44444a", "#0f0f12"],
   },
 ];
