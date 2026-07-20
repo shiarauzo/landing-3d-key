@@ -5,7 +5,7 @@ import { SectionHeader } from "../SectionHeader";
 export function Clients() {
   return (
     <section className="relative bg-[#0c0c0c] px-6 pt-6 sm:px-8">
-      <SectionHeader index="06" name="Por qué numeradas" />
+      <SectionHeader index="05" name="Por qué numeradas" />
 
       <div className="mx-auto max-w-4xl py-28 sm:py-40">
         <h2 className="text-4xl font-medium leading-[1.02] tracking-tight text-white sm:text-7xl">

@@ -4,12 +4,10 @@ import { Cursor } from "./honey/components/Cursor";
 import { Header } from "./honey/components/Header";
 import { SmoothScroll } from "./honey/components/SmoothScroll";
 import { About } from "./honey/components/sections/About";
-import { BeforeAfter } from "./honey/components/sections/BeforeAfter";
 import { Clients } from "./honey/components/sections/Clients";
 import { Faq } from "./honey/components/sections/Faq";
 import { Hero } from "./honey/components/sections/Hero";
 import { HowWeSprint } from "./honey/components/sections/HowWeSprint";
-import { KillThemWithSweetness } from "./honey/components/sections/KillThemWithSweetness";
 import { PoolRules } from "./honey/components/sections/PoolRules";
 import { Services } from "./honey/components/sections/Services";
 
@@ -30,10 +28,8 @@ export default function Home() {
           <About />
           <Services />
           <PoolRules />
-          <BeforeAfter />
           <HowWeSprint />
           <Clients />
-          <KillThemWithSweetness />
           <Faq />
         </main>
       </SmoothScroll>
