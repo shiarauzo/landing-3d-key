@@ -1,47 +1,44 @@
-import { Hero } from "./components/Hero";
+import type { Metadata } from "next";
 import { Landing } from "./components/Landing";
-import { ProductList } from "./components/ProductList";
-import { WaitlistForm } from "./components/WaitlistForm";
+import { Cursor } from "./honey/components/Cursor";
+import { Header } from "./honey/components/Header";
+import { SmoothScroll } from "./honey/components/SmoothScroll";
+import { About } from "./honey/components/sections/About";
+import { BeforeAfter } from "./honey/components/sections/BeforeAfter";
+import { Clients } from "./honey/components/sections/Clients";
+import { Faq } from "./honey/components/sections/Faq";
+import { Hero } from "./honey/components/sections/Hero";
+import { HowWeSprint } from "./honey/components/sections/HowWeSprint";
+import { HowWeWork } from "./honey/components/sections/HowWeWork";
+import { KillThemWithSweetness } from "./honey/components/sections/KillThemWithSweetness";
+import { PoolRules } from "./honey/components/sections/PoolRules";
+import { Services } from "./honey/components/sections/Services";
+
+export const metadata: Metadata = {
+  title: "UNIT — electrónica en ediciones numeradas",
+  description:
+    "UNIT diseña electrónica en series cortas y numeradas. Únete a la lista antes del lanzamiento.",
+};
 
 export default function Home() {
   return (
     <Landing>
-      <main className="relative">
-        <div className="grid-bg pointer-events-none absolute inset-0 z-0 opacity-40" />
-
-        <Hero />
-
-        <div className="py-16 sm:py-24">
-          <ProductList />
-        </div>
-
-        {/* Waitlist */}
-        <section
-          id="waitlist"
-          className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-start gap-8 px-6 py-24 sm:py-32"
-        >
-          <div>
-            <p className="tnum mb-4 text-xs uppercase tracking-[0.3em] text-[color:var(--accent)]">
-              — Lista de espera
-            </p>
-            <h2 className="max-w-2xl text-3xl font-medium leading-tight tracking-tight sm:text-5xl">
-              Sé de los primeros en tener una unidad.
-            </h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
-              Series cortas y numeradas. Cuando abramos, la lista entra primero.
-            </p>
-          </div>
-          <WaitlistForm />
-        </section>
-
-        {/* Footer */}
-        <footer className="relative z-10 mx-auto w-full max-w-5xl px-6 py-10">
-          <div className="tnum flex flex-col gap-3 border-t border-line pt-6 text-xs uppercase tracking-[0.2em] text-muted sm:flex-row sm:items-center sm:justify-between">
-            <span>UNIT © MMXXVI</span>
-            <span>Electrónica en ediciones numeradas</span>
-          </div>
-        </footer>
-      </main>
+      <Cursor />
+      <Header />
+      <SmoothScroll>
+        <main className="bg-black text-white md:cursor-none">
+          <Hero />
+          <About />
+          <Services />
+          <PoolRules />
+          <HowWeWork />
+          <BeforeAfter />
+          <HowWeSprint />
+          <Clients />
+          <KillThemWithSweetness />
+          <Faq />
+        </main>
+      </SmoothScroll>
     </Landing>
   );
 }
