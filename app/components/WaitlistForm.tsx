@@ -52,6 +52,8 @@ export function WaitlistForm() {
         {state === "success" ? (
           <motion.div
             key="success"
+            role="status"
+            aria-live="polite"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             className="tnum flex items-center gap-3 rounded-full border border-[color:var(--accent)] bg-[var(--accent-soft)] px-6 py-4 text-sm"
@@ -85,13 +87,13 @@ export function WaitlistForm() {
               <button
                 type="submit"
                 disabled={state === "loading"}
-                className="tnum shrink-0 rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50"
+                className="tnum shrink-0 rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--accent)] disabled:opacity-50"
               >
-                {state === "loading" ? "..." : "Entrar"}
+                {state === "loading" ? "…" : "Entrar"}
               </button>
             </div>
 
-            <div className="tnum h-4 px-4 text-xs">
+            <div className="tnum h-4 px-4 text-xs" role="status" aria-live="polite">
               {state === "error" ? (
                 <span className="text-red-400">{message}</span>
               ) : (
