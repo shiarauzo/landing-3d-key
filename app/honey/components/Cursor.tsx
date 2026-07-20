@@ -3,9 +3,9 @@
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { useEffect, useState } from "react";
 
-// A custom cursor: a small dot that trails the mouse and expands into a hollow
-// ring over interactive elements. The ring is transparent so it never covers
-// or inverts the content underneath.
+// A custom cursor: a small white ball that trails the mouse and grows a bit
+// over interactive elements. Kept small so it never swallows whole words
+// (mix-blend-difference just inverts the little patch underneath).
 export function Cursor() {
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
@@ -47,13 +47,12 @@ export function Cursor() {
       style={{ x: px, y: py }}
     >
       <motion.div
-        className="rounded-full border border-white"
+        className="rounded-full bg-white"
         animate={{
-          width: hover ? 44 : 10,
-          height: hover ? 44 : 10,
-          x: hover ? -22 : -5,
-          y: hover ? -22 : -5,
-          backgroundColor: hover ? "rgba(255,255,255,0)" : "rgb(255,255,255)",
+          width: hover ? 22 : 10,
+          height: hover ? 22 : 10,
+          x: hover ? -11 : -5,
+          y: hover ? -11 : -5,
         }}
         transition={
           reduce
