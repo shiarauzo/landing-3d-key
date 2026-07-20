@@ -27,7 +27,7 @@ const PHASES = [
 export function HowWeSprint() {
   return (
     <section className="relative bg-[#0c0c0c] px-6 pt-6 sm:px-8">
-      <SectionHeader index="04" name="El drop" />
+      <SectionHeader index="03" name="El drop" />
 
       <div className="py-20">
         <h2 className="max-w-2xl text-4xl font-medium leading-[1.05] tracking-tight text-white sm:text-6xl">

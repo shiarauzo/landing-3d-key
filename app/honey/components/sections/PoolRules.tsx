@@ -6,7 +6,7 @@ import { SectionHeader } from "../SectionHeader";
 export function PoolRules() {
   return (
     <section id="catalogo" className="relative bg-[#060608] px-6 pt-6 sm:px-8">
-      <SectionHeader index="03" name="Unidades" />
+      <SectionHeader index="02" name="Unidades" />
 
       <ul className="mt-6">
         {products.map((p) => {

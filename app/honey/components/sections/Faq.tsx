@@ -34,7 +34,7 @@ export function Faq() {
 
   return (
     <section id="reserva" className="relative bg-[#0c0c0c] px-6 pt-6 sm:px-8">
-      <SectionHeader index="05" name="Reserva" />
+      <SectionHeader index="04" name="Reserva" />
 
       {/* Waitlist */}
       <div className="grid gap-12 py-24 md:grid-cols-2">
