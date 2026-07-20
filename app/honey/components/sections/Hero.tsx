@@ -12,62 +12,66 @@ import { Marquee } from "../Marquee";
 
 const VW = 1440;
 const VH = 800;
-const STEP = 40; // divides both VW (36) and VH (20) evenly → grid aligns to edges
+const STEP = 40;
+const cols = VW / STEP;
+const rows = VH / STEP;
 
-const cols = VW / STEP; // 36
-const rows = VH / STEP; // 20
-const vLines = Array.from({ length: cols + 1 }, (_, i) => i);
-const hLines = Array.from({ length: rows + 1 }, (_, i) => i);
-const g = (n: number) => n * STEP; // grid unit → px
-
-// Circles centered on a grid node, radii = whole grid units → they cross nodes.
-const CIRCLE = { cx: g(5), cy: g(15), radii: [g(1), g(2), g(3), g(4)] };
+// Wordmark geometry — a monoline UNIT literally constructed from these values.
+const CAP = 240; // cap line
+const BASE = 560; // baseline
+const W = 40; // stem weight
+// U is defined by a real circle: its bowl is the lower half of this circle.
+const U = { xL: 330, xR: 490, r: 80, cy: 480, cx: 410 };
+const N = { xL: 590, xR: 750 };
+const I = { x: 850 };
+const T = { xL: 950, xR: 1110, cx: 1030 };
+const stemX = [U.xL, U.xR, N.xL, N.xR, I.x, T.xL, T.cx, T.xR];
 
 const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
-const container: Variants = {
+const container: Variants = { hidden: {}, visible: {} };
+const gridWrap: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.01, delayChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.008, delayChildren: 0.05 } },
 };
-const draw: Variants = {
+const gridLine: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
-  visible: {
-    pathLength: 1,
-    opacity: 1,
-    transition: { duration: 0.9, ease: EASE_OUT },
-  },
+  visible: { pathLength: 1, opacity: 1, transition: { duration: 0.6, ease: EASE_OUT } },
 };
-const fade: Variants = {
+const guide: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: { pathLength: 1, opacity: 1, transition: { duration: 1, ease: EASE_OUT, delay: 0.6 } },
+};
+const letter: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: { pathLength: 1, opacity: 1, transition: { duration: 1.2, ease: EASE_OUT, delay: 1.25 } },
+};
+const late: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6, delay: 1 } },
-};
-const wipe: Variants = {
-  hidden: { width: 0 },
-  visible: { width: VW, transition: { duration: 1.4, ease: EASE_OUT, delay: 0.6 } },
+  visible: { opacity: 1, transition: { duration: 0.7, delay: 2.1 } },
 };
 
-// [01/08] Hero — an animated technical-drawing plane. Everything snaps to one
-// grid; the plane traces itself, then stays alive with a scan line, marching
-// construction lines, blinking nodes and a coordinate crosshair on the cursor.
+// [01/08] Hero — a construction plane that actually builds the UNIT wordmark:
+// a guide circle defines the U's bowl, cap/baseline and stem guides define the
+// rest, and the monoline letters trace themselves along that construction.
 export function Hero() {
   const reduce = useReducedMotion();
 
-  // Parallax (drawing floats) + crosshair (follows cursor), both spring-smoothed.
   const px = useSpring(useMotionValue(0), { stiffness: 60, damping: 20 });
   const py = useSpring(useMotionValue(0), { stiffness: 60, damping: 20 });
   const cxRaw = useMotionValue(-100);
   const cyRaw = useMotionValue(-100);
-  const cx = useSpring(cxRaw, { stiffness: 400, damping: 32 });
-  const cy = useSpring(cyRaw, { stiffness: 400, damping: 32 });
+  const cx = useSpring(cxRaw, { stiffness: 400, damping: 34 });
+  const cy = useSpring(cyRaw, { stiffness: 400, damping: 34 });
   const [coord, setCoord] = useState({ x: 0, y: 0 });
-  const [titleHot, setTitleHot] = useState(false);
+  const [hot, setHot] = useState(false);
 
   function handleMove(e: React.MouseEvent) {
     if (reduce) return;
     const w = window.innerWidth;
     const h = window.innerHeight;
-    px.set((e.clientX / w - 0.5) * 22);
-    py.set((e.clientY / h - 0.5) * 22);
+    px.set((e.clientX / w - 0.5) * 18);
+    py.set((e.clientY / h - 0.5) * 18);
     cxRaw.set(e.clientX);
     cyRaw.set(e.clientY);
     setCoord({
@@ -76,12 +80,11 @@ export function Hero() {
     });
   }
 
-  const minor = "rgba(255,255,255,0.07)";
-  const major = "rgba(255,255,255,0.16)";
-  const lineStrong = "rgba(255,255,255,0.28)";
+  const minor = "rgba(255,255,255,0.05)";
+  const major = "rgba(255,255,255,0.12)";
+  const guideCol = "rgba(255,255,255,0.22)";
   const accent = "#4d7cff";
   const start = reduce ? "visible" : "hidden";
-  const loop = { repeat: Infinity, ease: "linear" as const };
 
   return (
     <section
@@ -92,213 +95,161 @@ export function Hero() {
         <motion.svg
           viewBox={`0 0 ${VW} ${VH}`}
           preserveAspectRatio="xMidYMid slice"
-          className="h-[110%] w-[110%]"
+          className="h-[108%] w-[108%]"
           style={{ x: px, y: py }}
           initial={start}
           animate="visible"
           variants={container}
         >
-          {/* Grid — minor + major every 5 cells */}
-          <motion.g variants={container}>
-            {vLines.map((i) => (
+          {/* Grid */}
+          <motion.g variants={gridWrap}>
+            {Array.from({ length: cols + 1 }, (_, i) => (
               <motion.line
                 key={`v${i}`}
-                x1={g(i)}
+                x1={i * STEP}
                 y1={0}
-                x2={g(i)}
+                x2={i * STEP}
                 y2={VH}
                 stroke={i % 5 === 0 ? major : minor}
-                strokeWidth={1}
-                variants={draw}
+                variants={gridLine}
               />
             ))}
-            {hLines.map((i) => (
+            {Array.from({ length: rows + 1 }, (_, i) => (
               <motion.line
                 key={`h${i}`}
                 x1={0}
-                y1={g(i)}
+                y1={i * STEP}
                 x2={VW}
-                y2={g(i)}
+                y2={i * STEP}
                 stroke={i % 5 === 0 ? major : minor}
-                strokeWidth={1}
-                variants={draw}
+                variants={gridLine}
               />
             ))}
           </motion.g>
 
-          {/* Technical decoration — all snapped to grid nodes */}
-          <motion.g variants={container} fill="none" stroke={lineStrong} strokeWidth={1.4}>
-            {/* Quarter arcs centered on grid nodes */}
-            <motion.path d={`M ${g(13)} 0 A ${g(13)} ${g(13)} 0 0 1 0 ${g(13)}`} variants={draw} />
-            <motion.path
-              d={`M ${g(21)} ${VH} A ${g(15)} ${g(15)} 0 0 1 ${VW} ${g(5)}`}
-              variants={draw}
-            />
-            {/* True 45° diagonals (equal dx/dy in grid units) → cross every node */}
-            <motion.line x1={0} y1={VH} x2={g(15)} y2={g(5)} variants={draw} />
-            <motion.line x1={g(24)} y1={VH} x2={VW} y2={g(8)} variants={draw} />
-            {/* Concentric circles */}
-            {CIRCLE.radii.map((r) => (
-              <motion.circle key={r} cx={CIRCLE.cx} cy={CIRCLE.cy} r={r} variants={draw} />
+          {/* Construction guides that DEFINE the wordmark */}
+          <motion.g variants={container} fill="none" stroke={guideCol} strokeWidth={1}>
+            {/* cap line + baseline */}
+            <motion.line x1={200} y1={CAP} x2={1240} y2={CAP} variants={guide} />
+            <motion.line x1={200} y1={BASE} x2={1240} y2={BASE} variants={guide} />
+            {/* stem edge guides */}
+            {stemX.map((x) => (
+              <motion.line key={x} x1={x} y1={180} x2={x} y2={620} variants={guide} strokeDasharray="3 5" />
             ))}
-            {/* 45° angle wedge, vertex on a node */}
-            <motion.line x1={g(27)} y1={g(10)} x2={g(32)} y2={g(10)} variants={draw} />
-            <motion.line x1={g(27)} y1={g(10)} x2={g(32)} y2={g(5)} variants={draw} />
+            {/* the circle that defines the U bowl */}
+            <motion.circle cx={U.cx} cy={U.cy} r={U.r} variants={guide} />
           </motion.g>
 
-          {/* Marching construction lines (constant motion, linear) */}
-          {!reduce && (
-            <g stroke={accent} strokeWidth={1.2} strokeDasharray="5 5" opacity={0.55}>
-              <motion.line
-                x1={g(5)}
-                y1={g(15)}
-                x2={g(5)}
-                y2={g(11)}
-                animate={{ strokeDashoffset: [0, -20] }}
-                transition={{ duration: 1, ...loop }}
-              />
-              <motion.line
-                x1={g(27)}
-                y1={g(10)}
-                x2={g(32)}
-                y2={g(10)}
-                stroke="rgba(255,255,255,0.35)"
-                animate={{ strokeDashoffset: [0, -20] }}
-                transition={{ duration: 1.4, ...loop }}
-              />
-            </g>
-          )}
-
-          {/* Scan line sweeping down the plane */}
-          {!reduce && (
-            <motion.line
-              x1={0}
-              x2={VW}
-              y1={0}
-              y2={0}
-              stroke="rgba(255,255,255,0.14)"
-              strokeWidth={1}
-              initial={{ y: 0, opacity: 0 }}
-              animate={{ y: [0, VH], opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 7, delay: 1.2, ...loop }}
-            />
-          )}
-
-          {/* Blinking measurement nodes on grid intersections */}
-          {!reduce &&
-            [
-              [g(15), g(5)],
-              [g(24), g(20)],
-              [g(32), g(10)],
-            ].map(([nx, ny], i) => (
-              <motion.circle
-                key={i}
-                cx={nx}
-                cy={ny}
-                r={3}
-                fill="#fff"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.15, 0.9, 0.15] }}
-                transition={{ duration: 2.4, delay: 1 + i * 0.4, ...loop }}
-              />
-            ))}
-
-          {/* Labels */}
+          {/* The monoline UNIT, traced along the construction */}
           <motion.g
-            variants={fade}
-            fill="rgba(255,255,255,0.42)"
-            style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            fontSize={15}
+            variants={container}
+            fill="none"
+            stroke={hot ? "#fff" : "rgba(255,255,255,0.92)"}
+            strokeWidth={W}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ transition: "stroke 240ms ease" }}
           >
-            {Array.from({ length: 13 }, (_, i) => i + 1).map((n) => (
-              <text key={n} x={g(n)} y={VH - g(0.5)} textAnchor="middle">
-                {n}
-              </text>
-            ))}
-            {[1, 2, 3, 4].map((n) => (
-              <text key={`c${n}`} x={CIRCLE.cx} y={CIRCLE.cy - g(n) + 5} textAnchor="middle">
-                {n}
-              </text>
-            ))}
-            <text x={g(2)} y={g(12)}>60°</text>
-            <text x={g(30)} y={g(10) - 6}>45°</text>
+            <motion.path
+              d={`M ${U.xL} ${CAP} L ${U.xL} ${U.cy} A ${U.r} ${U.r} 0 0 0 ${U.xR} ${U.cy} L ${U.xR} ${CAP}`}
+              variants={letter}
+            />
+            <motion.path
+              d={`M ${N.xL} ${BASE} L ${N.xL} ${CAP} L ${N.xR} ${BASE} L ${N.xR} ${CAP}`}
+              variants={letter}
+            />
+            <motion.path d={`M ${I.x} ${CAP} L ${I.x} ${BASE}`} variants={letter} />
+            <motion.path d={`M ${T.xL} ${CAP} L ${T.xR} ${CAP}`} variants={letter} />
+            <motion.path d={`M ${T.cx} ${CAP} L ${T.cx} ${BASE}`} variants={letter} />
           </motion.g>
 
-          {/* Blue accent dimension (cota) on grid */}
-          <motion.g variants={fade} stroke={accent} strokeWidth={1.4}>
-            <line x1={g(5)} y1={g(3)} x2={g(12)} y2={g(3)} />
-            <line x1={g(5)} y1={g(3) - 6} x2={g(5)} y2={g(3) + 6} />
-            <line x1={g(12)} y1={g(3) - 6} x2={g(12)} y2={g(3) + 6} />
+          {/* Tangent + center marks, radius, dimension, tagline (fade last) */}
+          <motion.g variants={late}>
+            {/* U circle center + radius, annotated */}
+            <circle cx={U.cx} cy={U.cy} r={3.5} fill={accent} />
+            <line x1={U.cx} y1={U.cy} x2={U.cx} y2={BASE} stroke={accent} strokeWidth={1} />
             <text
-              x={g(8.5)}
-              y={g(3) - 12}
-              textAnchor="middle"
+              x={U.cx + 10}
+              y={U.cy + 46}
               fill={accent}
-              stroke="none"
-              fontSize={15}
+              fontSize={14}
               style={{ fontFamily: "var(--font-geist-mono), monospace" }}
             >
-              UNIT.001
+              R{U.r}
             </text>
-          </motion.g>
-
-          {/* Title — UNIT as thick blueprint strokes, revealed by a wipe */}
-          <defs>
-            <clipPath id="unit-wipe">
-              <motion.rect x={0} y={0} height={VH} variants={wipe} />
-            </clipPath>
-          </defs>
-          <g clipPath="url(#unit-wipe)">
+            {/* tangent points */}
+            {[[U.xL, U.cy], [U.xR, U.cy], [U.cx, BASE]].map(([tx, ty], i) => (
+              <circle key={i} cx={tx} cy={ty} r={3} fill="none" stroke="#fff" strokeWidth={1.2} />
+            ))}
+            {/* width dimension = edition */}
+            <g stroke={accent} strokeWidth={1.2}>
+              <line x1={U.xL} y1={CAP - 60} x2={T.xR} y2={CAP - 60} />
+              <line x1={U.xL} y1={CAP - 66} x2={U.xL} y2={CAP - 54} />
+              <line x1={T.xR} y1={CAP - 66} x2={T.xR} y2={CAP - 54} />
+            </g>
             <text
-              x={VW / 2}
-              y={g(10)}
+              x={(U.xL + T.xR) / 2}
+              y={CAP - 72}
               textAnchor="middle"
-              dominantBaseline="middle"
-              fill="none"
-              stroke={titleHot ? "#fff" : "rgba(255,255,255,0.9)"}
-              strokeWidth={titleHot ? 3.2 : 2.5}
-              fontSize={300}
-              fontWeight={800}
-              letterSpacing={-6}
-              style={{
-                fontFamily: "var(--font-geist-sans), sans-serif",
-                transition: "stroke 220ms ease, stroke-width 220ms ease",
-              }}
+              fill={accent}
+              fontSize={14}
+              letterSpacing={2}
+              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
             >
-              UNIT
+              UNIT · 001
             </text>
+            {/* tagline */}
             <text
-              x={VW / 2}
-              y={g(10) + 118}
+              x={(U.xL + T.xR) / 2}
+              y={BASE + 64}
               textAnchor="middle"
-              fill="rgba(255,255,255,0.55)"
-              fontSize={20}
-              letterSpacing={8}
+              fill="rgba(255,255,255,0.5)"
+              fontSize={19}
+              letterSpacing={7}
               style={{ fontFamily: "var(--font-geist-mono), monospace" }}
             >
               ELECTRÓNICA EN EDICIONES NUMERADAS
             </text>
-          </g>
-          {/* Invisible hit area to detect hover over the wordmark */}
+          </motion.g>
+
+          {/* Hover hit area over the wordmark */}
           <rect
-            x={VW / 2 - 620}
-            y={g(10) - 120}
-            width={1240}
-            height={240}
+            x={U.xL - 40}
+            y={CAP - 40}
+            width={T.xR - U.xL + 80}
+            height={BASE - CAP + 80}
             fill="transparent"
-            onMouseEnter={() => setTitleHot(true)}
-            onMouseLeave={() => setTitleHot(false)}
+            onMouseEnter={() => setHot(true)}
+            onMouseLeave={() => setHot(false)}
           />
         </motion.svg>
       </div>
 
-      {/* Coordinate crosshair following the cursor */}
+      {/* Grain + vignette for material/depth */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[2] opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[2]"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+
+      {/* Coordinate crosshair on the cursor */}
       {!reduce && (
         <div className="pointer-events-none absolute inset-0 z-[5] hidden md:block">
           <motion.div className="absolute top-0 h-full w-px bg-white/10" style={{ x: cx }} />
-          <motion.div className="absolute left-0 w-full h-px bg-white/10" style={{ y: cy }} />
+          <motion.div className="absolute left-0 h-px w-full bg-white/10" style={{ y: cy }} />
           <motion.div
-            className="absolute font-mono text-[10px] uppercase tracking-widest text-white/45"
+            className="absolute font-mono text-[10px] uppercase tracking-widest text-white/40"
             style={{ x: cx, y: cy }}
           >
             <span className="ml-3 mt-2 inline-block">
