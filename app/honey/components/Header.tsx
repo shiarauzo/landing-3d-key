@@ -35,7 +35,7 @@ export function Header() {
 
         <a
           href="#reserva"
-          className={`rounded-full bg-[#4d7cff] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-white transition-transform hover:-translate-y-0.5 ${linkFocus}`}
+          className={`rounded-full bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-black transition-transform hover:-translate-y-0.5 ${linkFocus}`}
         >
           Reservar
         </a>
