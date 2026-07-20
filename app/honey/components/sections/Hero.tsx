@@ -16,16 +16,46 @@ const STEP = 40;
 const cols = VW / STEP;
 const rows = VH / STEP;
 
-// Wordmark geometry — a monoline UNIT literally constructed from these values.
-const CAP = 240; // cap line
-const BASE = 560; // baseline
-const W = 40; // stem weight
-// U is defined by a real circle: its bowl is the lower half of this circle.
-const U = { xL: 330, xR: 490, r: 80, cy: 480, cx: 410 };
-const N = { xL: 590, xR: 750 };
-const I = { x: 850 };
-const T = { xL: 950, xR: 1110, cx: 1030 };
-const stemX = [U.xL, U.xR, N.xL, N.xR, I.x, T.xL, T.cx, T.xR];
+// Wordmark on the grid — every edge lands on a 40px grid line, letters are
+// outlined (hollow) so the grid reads straight through them.
+const CAP = 270;
+const BASE = 630;
+
+// Geometric letters as grid-aligned primitives (rects + one diagonal per N).
+const LETTERS: Array<
+  | { t: "rect"; x: number; y: number; w: number; h: number }
+  | { t: "poly"; pts: number[][] }
+> = [
+  // U (squared staple)
+  {
+    t: "poly",
+    pts: [
+      [400, 270], [400, 630], [560, 630], [560, 270],
+      [520, 270], [520, 590], [440, 590], [440, 270],
+    ],
+  },
+  // N (single contour — left bar, diagonal, right bar)
+  {
+    t: "poly",
+    pts: [
+      [600, 630], [600, 270], [640, 270], [760, 630],
+      [760, 270], [720, 270], [640, 630],
+    ],
+  },
+  // I
+  { t: "rect", x: 800, y: 270, w: 40, h: 360 },
+  // T (single contour — bar + stem)
+  {
+    t: "poly",
+    pts: [
+      [880, 270], [1000, 270], [1000, 310], [960, 310],
+      [960, 630], [920, 630], [920, 310], [880, 310],
+    ],
+  },
+];
+const WM_L = 400;
+const WM_R = 1000;
+const stemGuides = [400, 560, 600, 760, 800, 840, 880, 1000];
 
 const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
@@ -44,16 +74,19 @@ const guide: Variants = {
 };
 const letter: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
-  visible: { pathLength: 1, opacity: 1, transition: { duration: 1.2, ease: EASE_OUT, delay: 1.25 } },
+  visible: {
+    pathLength: 1,
+    opacity: 1,
+    transition: { duration: 1.3, ease: EASE_OUT, delay: 1.2 },
+  },
 };
 const late: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.7, delay: 2.1 } },
 };
 
-// [01/08] Hero — a construction plane that actually builds the UNIT wordmark:
-// a guide circle defines the U's bowl, cap/baseline and stem guides define the
-// rest, and the monoline letters trace themselves along that construction.
+// [01/08] Hero — a construction plane. The UNIT wordmark is a geometric outline
+// snapped to the grid: hollow letters with square joins, the grid reads through.
 export function Hero() {
   const reduce = useReducedMotion();
 
@@ -82,9 +115,10 @@ export function Hero() {
 
   const minor = "rgba(255,255,255,0.05)";
   const major = "rgba(255,255,255,0.12)";
-  const guideCol = "rgba(255,255,255,0.22)";
-  const accent = "#4d7cff";
+  const guideCol = "rgba(255,255,255,0.2)";
+  const accent = "rgba(255,255,255,0.5)";
   const start = reduce ? "visible" : "hidden";
+  const strokeCol = hot ? "#fff" : "rgba(255,255,255,0.9)";
 
   return (
     <section
@@ -127,68 +161,62 @@ export function Hero() {
             ))}
           </motion.g>
 
-          {/* Construction guides that DEFINE the wordmark */}
+          {/* Construction guides */}
           <motion.g variants={container} fill="none" stroke={guideCol} strokeWidth={1}>
-            {/* cap line + baseline */}
-            <motion.line x1={200} y1={CAP} x2={1240} y2={CAP} variants={guide} />
-            <motion.line x1={200} y1={BASE} x2={1240} y2={BASE} variants={guide} />
-            {/* stem edge guides */}
-            {stemX.map((x) => (
-              <motion.line key={x} x1={x} y1={180} x2={x} y2={620} variants={guide} strokeDasharray="3 5" />
+            <motion.line x1={340} y1={CAP} x2={1060} y2={CAP} variants={guide} />
+            <motion.line x1={340} y1={BASE} x2={1060} y2={BASE} variants={guide} />
+            {stemGuides.map((x) => (
+              <motion.line
+                key={x}
+                x1={x}
+                y1={CAP - 60}
+                x2={x}
+                y2={BASE + 60}
+                strokeDasharray="3 6"
+                variants={guide}
+              />
             ))}
-            {/* the circle that defines the U bowl */}
-            <motion.circle cx={U.cx} cy={U.cy} r={U.r} variants={guide} />
           </motion.g>
 
-          {/* The monoline UNIT, traced along the construction */}
+          {/* The wordmark — geometric outline, hollow, grid reads through */}
           <motion.g
             variants={container}
             fill="none"
-            stroke={hot ? "#fff" : "rgba(255,255,255,0.92)"}
-            strokeWidth={W}
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            stroke={strokeCol}
+            strokeWidth={3}
+            strokeLinejoin="miter"
+            strokeLinecap="butt"
             style={{ transition: "stroke 240ms ease" }}
           >
-            <motion.path
-              d={`M ${U.xL} ${CAP} L ${U.xL} ${U.cy} A ${U.r} ${U.r} 0 0 0 ${U.xR} ${U.cy} L ${U.xR} ${CAP}`}
-              variants={letter}
-            />
-            <motion.path
-              d={`M ${N.xL} ${BASE} L ${N.xL} ${CAP} L ${N.xR} ${BASE} L ${N.xR} ${CAP}`}
-              variants={letter}
-            />
-            <motion.path d={`M ${I.x} ${CAP} L ${I.x} ${BASE}`} variants={letter} />
-            <motion.path d={`M ${T.xL} ${CAP} L ${T.xR} ${CAP}`} variants={letter} />
-            <motion.path d={`M ${T.cx} ${CAP} L ${T.cx} ${BASE}`} variants={letter} />
+            {LETTERS.map((s, i) =>
+              s.t === "rect" ? (
+                <motion.rect
+                  key={i}
+                  x={s.x}
+                  y={s.y}
+                  width={s.w}
+                  height={s.h}
+                  variants={letter}
+                />
+              ) : (
+                <motion.polygon
+                  key={i}
+                  points={s.pts.map((p) => p.join(",")).join(" ")}
+                  variants={letter}
+                />
+              ),
+            )}
           </motion.g>
 
-          {/* Tangent + center marks, radius, dimension, tagline (fade last) */}
+          {/* Dimension = edition + tagline */}
           <motion.g variants={late}>
-            {/* U circle center + radius, annotated */}
-            <circle cx={U.cx} cy={U.cy} r={3.5} fill={accent} />
-            <line x1={U.cx} y1={U.cy} x2={U.cx} y2={BASE} stroke={accent} strokeWidth={1} />
-            <text
-              x={U.cx + 10}
-              y={U.cy + 46}
-              fill={accent}
-              fontSize={14}
-              style={{ fontFamily: "var(--font-geist-mono), monospace" }}
-            >
-              R{U.r}
-            </text>
-            {/* tangent points */}
-            {[[U.xL, U.cy], [U.xR, U.cy], [U.cx, BASE]].map(([tx, ty], i) => (
-              <circle key={i} cx={tx} cy={ty} r={3} fill="none" stroke="#fff" strokeWidth={1.2} />
-            ))}
-            {/* width dimension = edition */}
             <g stroke={accent} strokeWidth={1.2}>
-              <line x1={U.xL} y1={CAP - 60} x2={T.xR} y2={CAP - 60} />
-              <line x1={U.xL} y1={CAP - 66} x2={U.xL} y2={CAP - 54} />
-              <line x1={T.xR} y1={CAP - 66} x2={T.xR} y2={CAP - 54} />
+              <line x1={WM_L} y1={CAP - 60} x2={WM_R} y2={CAP - 60} />
+              <line x1={WM_L} y1={CAP - 66} x2={WM_L} y2={CAP - 54} />
+              <line x1={WM_R} y1={CAP - 66} x2={WM_R} y2={CAP - 54} />
             </g>
             <text
-              x={(U.xL + T.xR) / 2}
+              x={(WM_L + WM_R) / 2}
               y={CAP - 72}
               textAnchor="middle"
               fill={accent}
@@ -198,9 +226,8 @@ export function Hero() {
             >
               UNIT · 001
             </text>
-            {/* tagline */}
             <text
-              x={(U.xL + T.xR) / 2}
+              x={(WM_L + WM_R) / 2}
               y={BASE + 64}
               textAnchor="middle"
               fill="rgba(255,255,255,0.5)"
@@ -212,11 +239,11 @@ export function Hero() {
             </text>
           </motion.g>
 
-          {/* Hover hit area over the wordmark */}
+          {/* Hover hit area */}
           <rect
-            x={U.xL - 40}
+            x={WM_L - 40}
             y={CAP - 40}
-            width={T.xR - U.xL + 80}
+            width={WM_R - WM_L + 80}
             height={BASE - CAP + 80}
             fill="transparent"
             onMouseEnter={() => setHot(true)}
@@ -225,7 +252,7 @@ export function Hero() {
         </motion.svg>
       </div>
 
-      {/* Grain + vignette for material/depth */}
+      {/* Grain + vignette */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-[2] opacity-[0.05]"
@@ -239,11 +266,11 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 z-[2]"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 50% 45%, transparent 40%, rgba(0,0,0,0.55) 100%)",
+            "radial-gradient(ellipse 70% 60% at 50% 45%, transparent 45%, rgba(0,0,0,0.5) 100%)",
         }}
       />
 
-      {/* Coordinate crosshair on the cursor */}
+      {/* Coordinate crosshair */}
       {!reduce && (
         <div className="pointer-events-none absolute inset-0 z-[5] hidden md:block">
           <motion.div className="absolute top-0 h-full w-px bg-white/10" style={{ x: cx }} />
