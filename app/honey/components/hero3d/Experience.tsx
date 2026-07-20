@@ -2,7 +2,7 @@
 
 import { useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const MODEL = "/models/hand.glb";
@@ -15,6 +15,17 @@ function damp(current: number, target: number, lambda: number, dt: number) {
 function Hand() {
   const { scene } = useGLTF(MODEL);
   const follow = useRef<THREE.Group>(null);
+
+  // Track the cursor on window (canvas events are blocked by the overlays).
+  const mouse = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
 
   // Clone, apply a white wireframe material, center + normalize scale.
   const model = useMemo(() => {
@@ -46,7 +57,7 @@ function Hand() {
   useFrame((state, dt) => {
     if (!follow.current) return;
     const t = state.clock.elapsedTime;
-    const { x, y } = state.pointer;
+    const { x, y } = mouse.current;
     // Always follow the cursor — rotate strongly toward it, drift gently.
     follow.current.rotation.y = damp(follow.current.rotation.y, x * 0.7, 3.5, dt);
     follow.current.rotation.x = damp(follow.current.rotation.x, -y * 0.5, 3.5, dt);
